@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投研数据 · 智能工作台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        paper: '#fffdf5',
+                        ink: '#2d2d2d',
+                        brand: { DEFAULT: '#db7c00', 50: '#fff8f0', 100: '#ffecd6', 600: '#db7c00', 700: '#b86800' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tpe-app {
+            background-color: #fffdf5;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .tpe-sketchy-border {
+            border: 2px solid #2d2d2d;
+            border-radius: 2px 255px 3px 25px / 255px 5px 225px 3px;
+        }
+
+        .tpe-btn-sketchy {
+            border: 2px solid #2d2d2d;
+            border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+            box-shadow: 2px 3px 0px rgba(0, 0, 0, 0.8);
+            transition: all 0.1s ease-in-out;
+        }
+
+        .tpe-btn-sketchy:hover {
+            box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.8);
+            transform: translate(1px, 2px);
+        }
+
+        .tpe-btn-sketchy.active {
+            background-color: #db7c00;
+            color: white;
+        }
+
+        .tpe-btn-child {
+            border: 2px solid transparent;
+            border-bottom: 2px dashed #e2e8f0;
+            transition: all 0.1s;
+            border-radius: 3px;
+            color: #64748b;
+        }
+
+        .tpe-btn-child:hover {
+            background-color: #f8fafc;
+            color: #db7c00;
+        }
+
+        .tpe-btn-child.active {
+            background-color: #fff8f0;
+            color: #db7c00;
+            font-weight: bold;
+            border: 2px solid #db7c00;
+            border-radius: 8px;
+        }
+
+        .tpe-card-sketchy {
+            border: 2px solid #2d2d2d;
+            border-radius: 5px;
+            box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .tpe-card-sketchy:hover {
+            transform: rotate(-1deg) scale(1.02);
+            box-shadow: 6px 6px 0px #db7c00;
+            z-index: 10;
+        }
+
+        .tpe-input-sketchy {
+            border: 2px solid #cbd5e1;
+            border-radius: 8px 2px 6px 3px;
+            background-color: #fff;
+        }
+
+        .tpe-input-sketchy:focus {
+            border-color: #db7c00;
+            outline: none;
+            box-shadow: 2px 2px 0px #db7c00;
+        }
+
+        .tpe-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .tpe-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .tpe-modal-bg {
+            background-color: rgba(45, 45, 45, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        textarea {
+            resize: none;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 min-h-screen">
+    <div
+        class="tpe-app w-full max-w-6xl mx-auto tpe-sketchy-border p-1 my-2 md:my-8 flex flex-col min-h-[700px] text-ink shadow-[5px_5px_0px_rgba(0,0,0,0.2)]">
+        <div
+            class="px-4 py-4 md:px-6 md:py-6 border-b-2 border-dashed border-slate-300 md:flex justify-between items-start bg-paper relative overflow-hidden">
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="text-xs font-black bg-black text-white px-2 py-0.5 transform -rotate-2">OPEN SOURCE
+                        LOGIC</span>
+                    <h2 class="text-2xl md:text-3xl font-black text-ink">勇麦的 AI 投资系统</h2>
+                </div>
+                <div class="text-slate-600 text-sm md:text-base space-y-1 font-medium leading-relaxed">
+                    <p>投资不应该是玄学，而是一个工程问题。</p>
+                    <p>我已将核心 <strong class="text-brand-600 bg-brand-50 px-1">Prompt 指令集</strong> 与 <strong
+                            class="text-brand-600 bg-brand-50 px-1">知识库架构</strong> 完全开源。</p>
+                    <p>你可以免费复制这套"外骨骼"，在混乱的市场中建立秩序。</p>
+                </div>
+            </div>
+            <div
+                class="mt-4 md:mt-0 md:text-right hidden md:block opacity-20 transform rotate-3 select-none pointer-events-none">
+                <span class="text-6xl">🧬</span>
+            </div>
+        </div>
+        <!-- Pro Workbench Header -->
+        <div
+            class="px-6 py-4 border-b-2 border-dashed border-slate-300 flex justify-between items-center bg-slate-50 relative z-20">
+            <div>
+                <h2 class="text-xl font-black text-ink flex items-center gap-2">
+                    投研中的常用提示词/Prompt
+                    <span
+                        class="text-sm bg-brand-600 text-white px-2 py-0.5 rounded-full border-2 border-black rotate-2 shadow-[1px_1px_0px_black] text-xs">Pro</span>
+                </h2>
+                <p class="text-slate-500 mt-1 text-xs md:text-sm">✨ Prompt工作台：选择指令，输入相应信息、复制后唤醒你的 AI 分析师。</p>
+            </div>
+        </div>
+        <div class="flex flex-col md:flex-row flex-1 overflow-hidden bg-white/50">
+            <div class="w-full md:w-64 border-b-2 md:border-b-0 md:border-r-2 border-slate-200 border-dashed flex-shrink-0 flex md:flex-col p-4 gap-2 overflow-x-auto md:overflow-y-auto tpe-scrollbar"
+                id="tpe-nav"></div>
+            <div class="flex-1 bg-paper p-3 md:p-5 overflow-y-auto tpe-scrollbar relative">
+                <div id="tpe-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-20"></div>
+
+                <!-- Footer -->
+                <div
+                    class="mt-10 pt-6 border-t-2 border-slate-100 border-dashed text-center text-xs text-slate-400 pb-2">
+                    <p class="mb-1">本项目仅开源投资逻辑，不构成投资建议。市场有风险，投资需谨慎。<br>此项目旨在交流投资思维，仅限个人使用，禁止转售或其他商业使用。</p>
+                    <p>作者抖音@勇麦</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="tpe-modal" class="fixed inset-0 z-[9999] hidden tpe-modal-bg flex items-center justify-center p-2 md:p-6">
+        <div
+            class="bg-paper rounded-lg border-4 border-ink shadow-[8px_8px_0px_black] w-full max-w-6xl h-[80vh] flex flex-col overflow-hidden relative">
+            <div
+                class="px-6 py-4 border-b-2 border-ink border-dashed flex justify-between items-center bg-brand-50 flex-shrink-0">
+                <h3 class="font-bold text-xl text-ink flex items-center gap-2 truncate pr-10" id="tpe-modal-title"></h3>
+                <button id="tpe-modal-close"
+                    class="text-ink hover:text-brand-600 border-2 border-ink rounded-full w-8 h-8 flex items-center justify-center hover:bg-white shadow-[2px_2px_0px_black]">✕</button>
+            </div>
+            <div class="flex-1 overflow-y-auto md:overflow-hidden flex flex-col md:flex-row">
+                <div
+                    class="w-full md:w-80 bg-slate-50 p-6 border-b-2 md:border-b-0 md:border-r-2 border-slate-200 border-dashed flex-shrink-0 md:overflow-y-auto tpe-scrollbar">
+                    <h4 class="text-sm font-black text-slate-500 uppercase mb-5">✏️ 变量配置</h4>
+                    <div id="tpe-modal-inputs" class="space-y-5"></div>
+                </div>
+                <div
+                    class="flex-shrink-0 md:flex-1 p-6 flex flex-col bg-paper md:overflow-hidden min-h-[60vh] md:min-h-0">
+                    <div class="flex-1 flex flex-col mb-4">
+                        <div class="flex justify-between items-end mb-2 flex-wrap gap-2">
+                            <h4 class="text-sm font-black text-slate-600 uppercase">📝 预览与编辑</h4>
+                            <div class="flex items-center gap-2">
+                                <select id="tpe-version-select" class="text-xs tpe-input-sketchy px-2 py-1 bg-white">
+                                    <option value="default">默认版本</option>
+                                </select>
+                                <span
+                                    class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 border border-yellow-300 rounded">可手动修改</span>
+                            </div>
+                        </div>
+                        <textarea id="tpe-modal-editor"
+                            class="flex-1 w-full bg-white tpe-input-sketchy p-5 text-sm text-ink leading-relaxed tpe-scrollbar"
+                            spellcheck="false"></textarea>
+                    </div>
+                    <div
+                        class="flex-shrink-0 flex flex-wrap justify-between items-center gap-2 pt-2 border-t-2 border-slate-100 border-dashed">
+                        <div class="flex gap-2">
+                            <button id="tpe-save-version-btn"
+                                class="bg-slate-100 text-slate-700 font-bold py-2 px-4 text-xs tpe-btn-sketchy">💾
+                                保存版本</button>
+                            <button id="tpe-reset-btn"
+                                class="bg-slate-100 text-slate-700 font-bold py-2 px-4 text-xs tpe-btn-sketchy">🔄
+                                重置默认</button>
+                            <button id="tpe-delete-version-btn"
+                                class="bg-red-50 text-red-600 font-bold py-2 px-4 text-xs tpe-btn-sketchy hidden">🗑️
+                                删除版本</button>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="tpe-copy-feedback" class="text-sm font-bold text-green-600 opacity-0"></span>
+                            <button id="tpe-copy-btn"
+                                class="bg-brand-600 text-white font-bold py-3 px-8 text-lg tpe-btn-sketchy">📋 复制
+                                Prompt</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/data/prompts.js"></script>
+    <script>
+        // 分类定义
+        const CATEGORIES = [
+            { id: "all", name: "全部", icon: "📚" },
+            { id: "市场洞察", name: "市场洞察", icon: "📡" },
+            { id: "个股分析", name: "个股分析", icon: "🔬", children: ["初始调研", "动态热更新"] },
+            { id: "战情分析", name: "战情分析", icon: "⚔️" },
+            { id: "关键动作", name: "关键动作", icon: "🎯", children: ["买入", "卖出", "持有"] },
+            { id: "全局与复盘", name: "全局与复盘", icon: "📊" }
+        ];
+
+        // 状态
+        let activeCategory = "all";
+        let currentPromptId = null;
+        let currentPromptDefaultText = '';
+
+        // DOM
+        const nav = document.getElementById('tpe-nav');
+        const grid = document.getElementById('tpe-grid');
+        const modal = document.getElementById('tpe-modal');
+        const mTitle = document.getElementById('tpe-modal-title');
+        const mInputs = document.getElementById('tpe-modal-inputs');
+        const mEditor = document.getElementById('tpe-modal-editor');
+        const mCloseBtn = document.getElementById('tpe-modal-close');
+        const mCopyBtn = document.getElementById('tpe-copy-btn');
+        const mCopyFeedback = document.getElementById('tpe-copy-feedback');
+        const mVersionSelect = document.getElementById('tpe-version-select');
+        const mSaveVersionBtn = document.getElementById('tpe-save-version-btn');
+        const mResetBtn = document.getElementById('tpe-reset-btn');
+        const mDeleteVersionBtn = document.getElementById('tpe-delete-version-btn');
+
+        // 获取分类下的prompt数量
+        function getPromptCount(catId) {
+            if (!window.PROMPTS_DATA) return 0;
+            if (catId === "all") return window.PROMPTS_DATA.length;
+
+            // 包含子类计数
+            const catObj = CATEGORIES.find(c => c.id === catId);
+            let targetCats = [catId];
+            if (catObj && catObj.children) {
+                targetCats = targetCats.concat(catObj.children);
+            }
+
+            return window.PROMPTS_DATA.filter(p => p.categories.some(c => targetCats.includes(c))).length;
+        }
+
+        // 渲染导航
+        function renderNav() {
+            nav.innerHTML = '';
+            CATEGORIES.forEach(cat => {
+                const count = getPromptCount(cat.id);
+                const hasChildren = cat.children && cat.children.length > 0;
+                const isActive = activeCategory === cat.id;
+                const wrapper = document.createElement('div');
+                // Mobile: horizontal item. Desktop: vertical item.
+                wrapper.className = 'mb-0 md:mb-2 mr-2 md:mr-0 min-w-[35%] md:min-w-0 flex-shrink-0';
+
+                const btnClass = isActive ? 'tpe-btn-sketchy active' : 'tpe-btn-sketchy bg-white text-slate-700 hover:bg-slate-50';
+
+                wrapper.innerHTML = `<button class="w-full text-left px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm font-bold flex items-center justify-between ${btnClass}" data-cat="${cat.id}">
+                <span class="truncate mr-1">${cat.name}</span>
+                ${hasChildren ? '<span class="text-slate-400 hidden md:inline">∧</span>' : `<span class="text-xs opacity-50 bg-black/5 px-2 py-0.5 rounded-full transform scale-90 md:scale-100">${count}</span>`}
+            </button>`;
+
+                if (hasChildren) {
+                    const subMenu = document.createElement('div');
+                    // Mobile: Hide submenus (Parent click shows all). Desktop: Show submenus.
+                    subMenu.className = 'mt-1 pl-4 space-y-1 hidden md:block';
+                    cat.children.forEach(childId => {
+                        const childCount = getPromptCount(childId);
+                        const isChildActive = activeCategory === childId;
+                        const childClass = isChildActive ? 'active' : '';
+                        subMenu.innerHTML += `<button class="tpe-btn-child w-full text-left px-4 py-2 text-xs flex items-center justify-between ${childClass}" data-cat="${childId}">
+                        <span>${childId}</span><span class="text-[10px] opacity-40">${childCount}</span>
+                    </button>`;
+                    });
+                    wrapper.appendChild(subMenu);
+                }
+                nav.appendChild(wrapper);
+            });
+        }
+
+        // 获取当前分类的prompts
+        function getFilteredPrompts() {
+            if (!window.PROMPTS_DATA) return [];
+            if (activeCategory === "all") return window.PROMPTS_DATA;
+
+            // 包含子类筛选
+            const catObj = CATEGORIES.find(c => c.id === activeCategory);
+            let targetCats = [activeCategory];
+            if (catObj && catObj.children) {
+                targetCats = targetCats.concat(catObj.children);
+            }
+
+            return window.PROMPTS_DATA.filter(p => p.categories.some(c => targetCats.includes(c)));
+        }
+
+        // 渲染卡片
+        function renderGrid() {
+            const prompts = getFilteredPrompts();
+            grid.innerHTML = '';
+            if (prompts.length === 0) {
+                grid.innerHTML = '<div class="col-span-full py-10 opacity-50 italic text-center">此分类下暂无指令。</div>';
+                return;
+            }
+            prompts.forEach(p => {
+                const categoryTags = p.categories.map(c => `<span class="text-[10px] bg-brand-50 text-brand-700 px-1.5 py-0.5 rounded border border-brand-200">${c}</span>`).join('');
+                const card = document.createElement('div');
+                card.className = 'tpe-card-sketchy p-4 cursor-pointer min-h-[160px] flex flex-col relative group';
+                card.setAttribute('data-prompt-id', p.id);
+                card.innerHTML = `<div class="mb-1 border-b-2 border-slate-100 border-dashed pb-1"><h4 class="font-black text-ink text-base leading-tight truncate" title="${p.title}">${p.title}</h4></div>
+                <div class="flex-1 overflow-hidden relative mb-2"><p class="text-xs text-slate-500 leading-snug" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${p.desc}</p></div>
+                <div class="flex flex-wrap gap-1 mt-auto pt-2 border-t border-slate-100">${categoryTags}</div>`;
+                grid.appendChild(card);
+            });
+        }
+
+        // 查找prompt
+        function findPrompt(id) {
+            if (!window.PROMPTS_DATA) return null;
+            return window.PROMPTS_DATA.find(p => p.id === id);
+        }
+
+        // 变量定义 - 已更新覆盖 P7-P15 需求
+        const INPUT_DEFS = {
+            'ticker': { label: 'Ticker 标的', ph: 'e.g. NVDA' },
+            'price': { label: 'Price 价格/数据', ph: '输入当前价格、市值或结果...', type: 'textarea' },
+            'sentiment': { label: 'Sentiment 情绪/宏观', ph: '输入市场情绪或宏观背景...', type: 'textarea' },
+            'event': { label: 'Event 事件内容', ph: '粘贴新闻/财报/公告内容...', type: 'textarea' },
+            'context': { label: 'Context 知识库/持仓', ph: '粘贴知识库、持仓或背景信息...', type: 'textarea' },
+            'notes': { label: 'Notes 补充说明', ph: '补充说明、目标或理由...', type: 'textarea' },
+            'strategy': { label: 'Strategy 策略', ph: 'SOP 1 (PVE) 或 SOP 2 (PVP)...', type: 'text' },
+            'action': { label: 'Action 操作意图', ph: '打算做什么操作...', type: 'textarea' },
+            'reason': { label: 'Reason 理由', ph: '操作背后的逻辑...', type: 'textarea' }
+        };
+
+        // 渲染输入
+        function renderModalInputs(reqs) {
+            mInputs.innerHTML = '';
+            if (!reqs || reqs.length === 0) { mInputs.innerHTML = '<p class="text-slate-400 text-xs text-center py-4 bg-slate-100 rounded border-2 border-dashed">无额外变量</p>'; return; }
+            reqs.forEach(key => {
+                const d = INPUT_DEFS[key];
+                // 如果prompt用了没定义的key，就跳过
+                if (!d) return;
+
+                const isTextarea = d.type === 'textarea';
+                const savedValue = localStorage.getItem(`tpe_var_${key}`) || '';
+                const inputEl = isTextarea ? `<textarea class="inp-val w-full tpe-input-sketchy p-3 text-sm h-24" placeholder="${d.ph}">${savedValue}</textarea>` : `<input type="text" class="inp-val w-full tpe-input-sketchy p-3 text-sm" placeholder="${d.ph}" value="${savedValue}">`;
+                const div = document.createElement('div');
+                div.className = 'inp-group pb-4 border-b-2 border-slate-200 border-dashed last:border-0';
+                div.setAttribute('data-key', key);
+                div.innerHTML = `<label class="flex items-center gap-2 mb-2 cursor-pointer"><input type="checkbox" class="inp-check w-5 h-5 accent-brand-600" checked><span class="text-xs font-black text-slate-600 uppercase">${d.label}</span></label>${inputEl}`;
+                mInputs.appendChild(div);
+            });
+        }
+
+        // 更新编辑器
+        function updateEditor() {
+            // 获取基础文本（默认版本或保存的版本）
+            let baseText = currentPromptDefaultText;
+            if (mVersionSelect.value !== 'default') {
+                const savedVersion = localStorage.getItem(`tpe_prompt_${currentPromptId}_${mVersionSelect.value}`);
+                if (savedVersion) baseText = savedVersion;
+            }
+
+            // 从基础文本开始，应用变量替换
+            let text = baseText;
+
+            document.querySelectorAll('.inp-group').forEach(g => {
+                const key = g.dataset.key;
+                const checkbox = g.querySelector('.inp-check');
+                const input = g.querySelector('.inp-val');
+                const checked = checkbox ? checkbox.checked : false;
+                const val = input ? input.value : '';
+
+                // 保存输入值到localStorage
+                localStorage.setItem(`tpe_var_${key}`, val);
+
+                // 定义匹配模式
+                const patterns = {
+                    ticker: /\[\[?Ticker\]?\]|\[股票标的ticker\]|\[股票标的\]|\[Target Ticker\]|\[代码\]/gi,
+                    price: /\[Price Data\]|\[Current Price Data\]|\[当前价格[^\]]*\]|\[当前价格\/市值\]|\[Price\]|\[Total Net Worth\]|\[Result\]/gi,
+                    sentiment: /\[Market Sentiment\]|\[市场情绪\]|\[宏观环境\]|\[Macro Context\]|\[Sentiment\]/gi,
+                    event: /\[Event\]|\[Event Content\]|\[事件详情\]|\[事件内容\]|\[事件\/研报内容\]|\[Macro Event\]|\[宏观事件\]/gi,
+                    context: /\[Context\]|\[Knowledge Base Summary\]|\[Knowledge Base\]|\[知识库内容\]|\[持仓数据\]|\[交易详情\]|\[操作意图与理由\]|\[持仓情况\]|\[Current Portfolio\]|\[Original Thesis\]|\[Holdings\]/gi,
+                    notes: /\[Notes\]|\[Additional Notes\]|\[补充说明\]|\[Objective\]|\[Exit Reason\]/gi,
+                    strategy: /\[Strategy\]|\[Current Strategy\]/gi,
+                    action: /\[Action\]|\[Intended Action\]/gi,
+                    reason: /\[Reason\]|\[Reasoning\]/gi
+                };
+                const pattern = patterns[key] || new RegExp(`\\[${key}\\]`, 'gi');
+
+                if (checked && val.trim()) {
+                    // 勾选且有值：替换占位符，并保留方括号格式 [Value]
+                    text = text.replace(pattern, `[${val}]`);
+                } else if (!checked) {
+                    // 未勾选：删除 User Input 中包含该变量的整行 (匹配数字开头的列表项)
+                    const lineRegex = new RegExp(`^\\d+\\..*(?:${pattern.source}).*$(\\r?\\n)?`, 'gmi');
+                    text = text.replace(lineRegex, '');
+                }
+            });
+
+            // 修复序号逻辑：重新对列表行进行编号
+            let listCounter = 0;
+            text = text.split(/\r?\n/).map(line => {
+                if (/^\d+\./.test(line)) {
+                    listCounter++;
+                    return line.replace(/^\d+\./, `${listCounter}.`);
+                } else {
+                    if (line.trim() !== '') listCounter = 0;
+                    return line;
+                }
+            }).join('\n');
+
+            mEditor.value = text;
+        }
+
+        // 版本管理
+        function loadVersionList() {
+            mVersionSelect.innerHTML = '<option value="default">默认版本</option>';
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i), prefix = `tpe_prompt_${currentPromptId}_`;
+                if (key.startsWith(prefix)) {
+                    const v = key.substring(prefix.length);
+                    mVersionSelect.innerHTML += `<option value="${v}">📌 ${v}</option>`;
+                }
+            }
+            mDeleteVersionBtn.classList.toggle('hidden', mVersionSelect.value === 'default');
+        }
+
+        function saveVersion() {
+            const name = prompt('请输入版本名称：', `v${new Date().toLocaleDateString('zh-CN').replace(/\//g, '-')}`);
+            if (!name) return;
+            localStorage.setItem(`tpe_prompt_${currentPromptId}_${name}`, mEditor.value);
+            loadVersionList(); mVersionSelect.value = name;
+            showFeedback('版本已保存！');
+        }
+
+        function deleteVersion() {
+            const v = mVersionSelect.value; if (v === 'default') return;
+            if (confirm(`确定删除版本 "${v}" 吗？`)) {
+                localStorage.removeItem(`tpe_prompt_${currentPromptId}_${v}`);
+                loadVersionList(); mVersionSelect.value = 'default'; updateEditor();
+                showFeedback('版本已删除');
+            }
+        }
+
+        function showFeedback(msg) { mCopyFeedback.textContent = msg; mCopyFeedback.style.opacity = '1'; setTimeout(() => mCopyFeedback.style.opacity = '0', 2000); }
+
+        // 打开模态框
+        function openModal(promptId) {
+            const p = findPrompt(promptId); if (!p) return;
+            currentPromptId = p.id;
+            currentPromptDefaultText = p.text;
+            mTitle.innerHTML = `<span class="text-3xl mr-3">${p.icon}</span><span class="underline decoration-wavy decoration-brand-600">${p.title}</span>`;
+            loadVersionList();
+            renderModalInputs(p.inputs);
+            updateEditor();
+            modal.classList.remove('hidden');
+        }
+
+        // 复制
+        async function copyPrompt() {
+            const content = mEditor.value;
+            if (!content.trim()) { showFeedback('内容为空！'); return; }
+            try {
+                await navigator.clipboard.writeText(content);
+                showFeedback('已复制到剪贴板！');
+                mCopyBtn.innerHTML = '✅ 已复制!';
+                setTimeout(() => mCopyBtn.innerHTML = '📋 复制 Prompt', 2000);
+            } catch (e) {
+                mEditor.select(); document.execCommand('copy');
+                showFeedback('已复制到剪贴板！');
+            }
+        }
+
+        // 初始化
+        function init() {
+            // 等待PROMPTS_DATA加载
+            if (!window.PROMPTS_DATA) {
+                setTimeout(init, 100);
+                return;
+            }
+
+            renderNav();
+            renderGrid();
+
+            // 导航点击
+            nav.addEventListener('click', e => {
+                const btn = e.target.closest('[data-cat]');
+                if (btn) { activeCategory = btn.dataset.cat; renderNav(); renderGrid(); }
+            });
+
+            // 卡片点击
+            grid.addEventListener('click', e => {
+                const card = e.target.closest('[data-prompt-id]');
+                if (card) openModal(card.dataset.promptId);
+            });
+
+            // 模态框事件
+            mCloseBtn.addEventListener('click', () => modal.classList.add('hidden'));
+            modal.addEventListener('click', e => { if (e.target === modal) modal.classList.add('hidden'); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') modal.classList.add('hidden'); });
+
+            // 输入事件
+            document.addEventListener('input', e => { if (e.target.classList.contains('inp-val')) updateEditor(); });
+            document.addEventListener('change', e => { if (e.target.classList.contains('inp-check')) updateEditor(); });
+            mVersionSelect.addEventListener('change', () => { mDeleteVersionBtn.classList.toggle('hidden', mVersionSelect.value === 'default'); updateEditor(); });
+
+            // 版本按钮
+            mSaveVersionBtn.addEventListener('click', saveVersion);
+            mResetBtn.addEventListener('click', () => { mVersionSelect.value = 'default'; updateEditor(); showFeedback('已重置为默认版本'); });
+            mDeleteVersionBtn.addEventListener('click', deleteVersion);
+            mCopyBtn.addEventListener('click', copyPrompt);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+
+</html>
