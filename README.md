@@ -1,6 +1,4 @@
-# 🚀 TIB OS v3.0: AI 投资副驾驶系统 (完整开源)
 
-![GitHub stars](https://img.shields.io/github/stars/your-username/your-repo-name?style=social ) ![GitHub forks](https://img.shields.io/github/forks/your-username/your-repo-name?style=social ) ![License](https://img.shields.io/github/license/your-username/your-repo-name )
 
 ## ✨ 项目简介
 
